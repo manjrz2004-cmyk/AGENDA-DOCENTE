@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Estudios de Temas</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=Poppins&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        background-color: #FC9B2;
+        font-family: 'Poppins', sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
+
+    /* CONTENEDOR DE LOGOS */
+    .logos {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .logos img {
+        height: 80px;
+    }
+
+    /* ENCABEZADO TEXTO */
+    .encabezado {
+        text-align: center;
+        font-family: 'Playfair Display', serif;
+        margin: 10px 0 20px 0;
+    }
+
+    .encabezado h1, .encabezado h2, .encabezado h3, .encabezado h4 {
+        margin: 5px;
+    }
+
+    .contenedor {
+        max-width: 900px;
+        margin: auto;
+        background: white;
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    }
+
+    input, button {
+        padding: 10px;
+        margin: 5px 0;
+        width: 100%;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+    }
+
+    button {
+        background-color: #333;
+        color: white;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #555;
+    }
+
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    th, td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: center;
+    }
+
+    th {
+        background-color: #f4f4f4;
+    }
+</style>
+</head>
+
+<body>
+
+<!-- LOGOS -->
+<div class="logos">
+    <img src="sep.png" alt="SEP">
+    <img src="conafe.png" alt="CONAFE">
+</div>
+
+<!-- TEXTO -->
+<div class="encabezado">
+    <h1>Consejo Nacional de Fomento Educativo</h1>
+    <h2>Región Papantla</h2>
+    <h3>Micro Región 18 Mecatlán</h3>
+    <h4>Estudios de Temas</h4>
+</div>
+
+<div class="contenedor">
+
+    <h3>Registrar actividad</h3>
+
+    <label>Fecha de inicio:</label>
+    <input type="date" id="fechaInicio">
+
+    <label>Fecha de cierre:</label>
+    <input type="date" id="fechaFin">
+
+    <input type="text" id="tema" placeholder="Tema trabajado">
+    <input type="text" id="campo" placeholder="Campo formativo">
+
+    <button onclick="guardar()">Guardar registro</button>
+
+    <table id="tabla">
+        <thead>
+            <tr>
+                <th>Inicio</th>
+                <th>Cierre</th>
+                <th>Tema</th>
+                <th>Campo Formativo</th>
+                <th>Acción</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+</div>
+
+<script>
+    let datos = JSON.parse(localStorage.getItem("registros")) || [];
+
+    function guardar() {
+        let inicio = document.getElementById("fechaInicio").value;
+        let fin = document.getElementById("fechaFin").value;
+        let tema = document.getElementById("tema").value;
+        let campo = document.getElementById("campo").value;
+
+        if (inicio === "" || fin === "" || tema === "" || campo === "") {
+            alert("Completa todos los campos");
+            return;
+        }
+
+        if (fin < inicio) {
+            alert("La fecha de cierre no puede ser menor a la de inicio");
+            return;
+        }
+
+        let registro = { inicio, fin, tema, campo };
+        datos.push(registro);
+
+        localStorage.setItem("registros", JSON.stringify(datos));
+
+        mostrar();
+        limpiar();
+    }
+
+    function mostrar() {
+        let tabla = document.querySelector("#tabla tbody");
+        tabla.innerHTML = "";
+
+        datos.forEach((item, index) => {
+            let fila = `
+                <tr>
+                    <td>${item.inicio}</td>
+                    <td>${item.fin}</td>
+                    <td>${item.tema}</td>
+                    <td>${item.campo}</td>
+                    <td><button onclick="eliminar(${index})">Eliminar</button></td>
+                </tr>
+            `;
+            tabla.innerHTML += fila;
+        });
+    }
+
+    function eliminar(index) {
+        datos.splice(index, 1);
+        localStorage.setItem("registros", JSON.stringify(datos));
+        mostrar();
+    }
+
+    function limpiar() {
+        document.getElementById("fechaInicio").value = "";
+        document.getElementById("fechaFin").value = "";
+        document.getElementById("tema").value = "";
+        document.getElementById("campo").value = "";
+    }
+
+    mostrar();
+</script>
+
+</body>
+</html>
